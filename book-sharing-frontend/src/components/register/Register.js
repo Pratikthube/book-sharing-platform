@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import axios from "../../utils/axiosRequest";
-import tokenManager from "../../utils/tokenManager";
 import { useNavigate } from "react-router-dom";
+import axiosHandler from "../../utils/axiosRequest";
 
 function isValidPassword(str) {
   var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
@@ -25,45 +24,55 @@ function Register() {
       return;
     }
     try {
-      const response = await axios.post("/auth/register", {
+      const response = await axiosHandler().post("/auth/register", {
         username,
         email,
         password,
       });
-      tokenManager.setToken(response.data.token);
-      alert("Register successful! YouwAESDFGYHUI90-Sasdfghuiop[=`1234567890");
+      alert("Register successful! ");
       navigate("/");
     } catch (err) {
       console.error(err);
-      alert("Login failed.");
+      alert("Register failed.");
     }
   };
 
   return (
-    <form onSubmit={handleRegister}>
-      <input
-        type="text"
-        required
-        minlength="4"
-        maxlength="10"
-        placeholder="User Name"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Register</button>
-    </form>
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1> Fill your details</h1>
+      <form onSubmit={handleRegister}>
+        <input
+          style={{ margin: "5px" }}
+          type="text"
+          required
+          minlength="4"
+          maxlength="10"
+          placeholder="User Name"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <br />
+        <input
+          style={{ margin: "5px" }}
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <br />
+        <input
+          style={{ margin: "5px" }}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <br />
+        <button style={{ margin: "5px" }} type="submit">
+          Register
+        </button>
+      </form>
+    </div>
   );
 }
 

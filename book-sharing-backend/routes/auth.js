@@ -4,11 +4,20 @@ const jwt = require("jsonwebtoken");
 const { User } = require("../models/index");
 const router = express.Router();
 
+function isValidPassword(str) {
+  var re = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  return re.test(str);
+}
+
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
+    if (!isValidPassword(password)) {
+      throw new Error("password constraint failed");
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       username,
       email,

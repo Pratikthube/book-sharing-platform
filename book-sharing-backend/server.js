@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { sequelize } = require("./models");
+const jwtValidator = require("./middlewares/jwtValidator");
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -30,9 +31,9 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/auth", require("./routes/auth"));
-app.use("api/user", require("./routes/auth"));
-app.use("/api/books", require("./routes/books"));
-app.use("/api/exchange", require("./routes/exchangeRequest"));
+app.use("api/user", jwtValidator, require("./routes/auth"));
+app.use("/api/books", jwtValidator, require("./routes/books"));
+app.use("/api/exchange", jwtValidator, require("./routes/exchangeRequest"));
 
 // Sync DB and Start Server
 const PORT = process.env.PORT || 5000;
