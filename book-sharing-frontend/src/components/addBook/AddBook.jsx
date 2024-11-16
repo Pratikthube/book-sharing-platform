@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../../utils/axiosRequest";
 
 function AddBook() {
   const [title, setTitle] = useState("");
@@ -11,7 +11,7 @@ function AddBook() {
     e.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/api/books",
+        "/api/books",
         { title, author, genre, condition },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

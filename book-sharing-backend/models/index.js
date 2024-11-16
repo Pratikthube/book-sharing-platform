@@ -1,17 +1,25 @@
-const { Sequelize } = require("sequelize");
-const { sequelize } = require("../config/db");
+const sequelize = require("../config/database");
+const User = require("./user");
+const Book = require("./book");
+const ExchangeRequest = require("./exchangeRequest");
+const Comment = require("./comment");
 
-// Import models
-const User = require("./User");
-const Book = require("./Book");
+// Relationships
+User.hasMany(Book, { onDelete: "CASCADE" });
+Book.belongsTo(User);
 
-// Define associations
-User.hasMany(Book, { foreignKey: "user_id", onDelete: "CASCADE" }); // A user can have many books
-Book.belongsTo(User, { foreignKey: "user_id" }); // A book belongs to one user
+User.hasMany(ExchangeRequest, { foreignKey: "sender_id" });
+User.hasMany(ExchangeRequest, { foreignKey: "recipient_id" });
+ExchangeRequest.belongsTo(User, { foreignKey: "sender_id" });
+ExchangeRequest.belongsTo(User, { foreignKey: "recipient_id" });
 
-// Export all models and the Sequelize instance
-module.exports = {
-  sequelize, // Database connection instance
-  User,
-  Book,
-};
+Book.hasMany(ExchangeRequest, { onDelete: "CASCADE" });
+ExchangeRequest.belongsTo(Book);
+
+Book.hasMany(Comment, { onDelete: "CASCADE" });
+Comment.belongsTo(Book);
+
+User.hasMany(Comment, { onDelete: "CASCADE" });
+Comment.belongsTo(User);
+
+module.exports = { sequelize, User, Book, ExchangeRequest, Comment };

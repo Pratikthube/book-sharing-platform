@@ -1,25 +1,42 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
 const cors = require("cors");
-const { connectDB } = require("./config/db");
-const { sequelize } = require("./config/db");
-const { User, Book } = require("./models/index");
+const { sequelize } = require("./models");
 
-require("dotenv").config();
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://your-frontend-domain.com",
+];
 
+dotenv.config();
 const app = express();
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (e.g., mobile apps or CURL)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error("Not allowed by CORS"));
+      }
+      return callback(null, true);
+    },
+    credentials: true, // If your frontend needs cookies or authorization headers
+  })
+);
+
 app.use(bodyParser.json());
-app.use(cors());
-
-// Connect to the database
-connectDB();
-
-// Sync models
-sequelize.sync({ alter: true }).then(() => console.log("Database synced."));
 
 // Routes
-app.use("/api/auth", require("./routes/auth"));
+app.use("/auth", require("./routes/auth"));
+app.use("api/user", require("./routes/auth"));
 app.use("/api/books", require("./routes/books"));
+app.use("/api/exchange", require("./routes/exchangeRequest"));
 
+// Sync DB and Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Database synchronized");
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+});
